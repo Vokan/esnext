@@ -70,7 +70,7 @@ class Trip {
     }
 
     toString(){
-        return "Trip ["+this.id +" "+ this.name +" "+ this.imageUrl +" "+ this._price +"]";
+        return `Trip [${this.id} ${this.name} ${this.imageUrl} ${this._price}]`;
     }
 
     static getDefaultTrip(){
@@ -92,7 +92,7 @@ class Trip {
 class FreeTrip extends Trip {
 
     toString(){
-        return "Free" + "Trip ["+this.id +" "+ this.name +" "+ this.imageUrl +" "+ this._price +"]";
+        return `FreeTrip [${this.id} ${this.name} ${this.imageUrl} ${this._price}]`;
     }
 }
     const freeTrip = new FreeTrip("nantes","Nantes"," img/nantes.jpg");
@@ -102,4 +102,61 @@ class FreeTrip extends Trip {
 
     //<-----------Promise,Set,Map,Arrow function---------->
 
-    
+    class TripService {
+        constructor(clé,voyage,valeur) {
+        
+            const Trip1 = new Trip('paris', 'Paris', 'img/paris.jpg');
+            const Trip2 = new Trip('nantes', 'Nantes', 'img/nantes.jpg');
+            const Trip3 = new Trip('rio-de-janeiro', 'Rio de Janeiro', 'img/rio-de-janeiro.jpg');
+            this.setTrips = new Set();
+            this.setTrips.add(Trip1);
+            this.setTrips.add(Trip2);
+            this.setTrips.add(Trip3);
+
+            }
+            findByName(tripName) {
+        return new Promise((resolve, reject) => { 
+            
+            setTimeout( () => {
+                         for (const trip of this.setTrips) // attention faut pas mettre in mais of!
+                             if (trip.name == tripName){
+                                 resolve(trip);
+                             }
+                         
+                         reject(`No trip with name${tripName}`);
+        
+                        }, 2000) 
+                    });
+                } 
+            }
+        class PriceService {
+        constructor() {
+        this.prices = new Map();
+        this.prices.set('paris', 100);
+        this.prices.set('rio-de-janeiro', 800);
+            }
+            findPriceByTripId(tripId) {
+        return new Promise((resolve, reject) => { 
+            setTimeout( () => {
+                if (this.prices.has(tripId)){
+                    resolve(this.prices.get(tripId));
+                }
+                reject(`No price found for id ${tripId}`);
+        
+            },2000)
+        });
+            }
+            
+        }
+
+        const tripService = new TripService();
+        const priceService = new PriceService();
+
+        tripService.findByName('Paris').then(trip => Go("Trip found : "+trip), error => Go(error));
+        tripService.findByName('Toulouse').then(trip => Go(trip), error => Go(error));
+
+        tripService.findByName('Rio de Janeiro').then(trip=>trip.id).
+        then(id =>priceService.findPriceByTripId(id)).then(price=>Go("Price found : "+ price)).catch(err=>Go("Error "+err));
+        
+        tripService.findByName('Nantes').then(trip=>trip.id).
+        then(id =>priceService.findPriceByTripId(id)).then(price=>Go("Price found : "+ price)).catch(err=>Go(err));
